@@ -39,26 +39,22 @@ The platform is designed to deploy cleanly into **2 coordinated Render Web Servi
 
 ## 🚀 Method 1: 1-Click Render Blueprint (Recommended)
 
-The repository includes a ready-to-use [`render.yaml`](file:///Users/anjalisimmalapudi/Desktop/proj/render.yaml) specification file.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ruthik5186/Quantum-QKD)
 
-### Step 1: Push Repository to GitHub
-If you haven't already created a GitHub repository:
-```bash
-# In the project directory (/Users/anjalisimmalapudi/Desktop/proj):
-git remote add origin https://github.com/<your-github-username>/<your-repo-name>.git
-git branch -M main
-git push -u origin main
-```
+The repository includes a ready-to-use [`render.yaml`](./render.yaml) specification file.
 
-### Step 2: Deploy on Render
-1. Open [Render Dashboard](https://dashboard.render.com).
-2. Click **New +** in the top right, then select **Blueprint**.
-3. Connect your GitHub account and choose the repository you just pushed.
-4. Render will automatically detect [`render.yaml`](file:///Users/anjalisimmalapudi/Desktop/proj/render.yaml) and parse both services:
+### Step 1: Deploy with 1-Click Link or Dashboard
+1. Click the button above, or navigate directly to:
+   **[https://render.com/deploy?repo=https://github.com/ruthik5186/Quantum-QKD](https://render.com/deploy?repo=https://github.com/ruthik5186/Quantum-QKD)**
+2. If using the dashboard manually:
+   - Open [Render Dashboard](https://dashboard.render.com).
+   - Click **New +** in the top right, then select **Blueprint**.
+   - Connect your GitHub account and choose **`ruthik5186/Quantum-QKD`**.
+3. Render automatically detects [`render.yaml`](./render.yaml) and provisions both services:
    - `quantum-engine` (Python Web Service)
    - `qkd-chat-platform` (Node Full-Stack Web Service)
-5. Click **Apply**.
-6. Render will build and deploy both services concurrently. Once ready, open the URL generated for `qkd-chat-platform` (e.g. `https://qkd-chat-platform.onrender.com`) in your browser.
+4. Click **Apply**.
+5. Render will build and deploy both services concurrently. Once ready, open the URL generated for `qkd-chat-platform` (e.g. `https://qkd-chat-platform.onrender.com`) in your browser.
 
 ---
 

@@ -1,5 +1,7 @@
 # UC025 — Dynamic E91 QKD Secure Communication Platform
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ruthik5186/Quantum-QKD)
+
 A complete, production-grade platform demonstrating **secure quantum key distribution (QKD)** and **authenticated encrypted communication** between critical-infrastructure sites (e.g. electrical substations, control centers), powered by the **dynamic E91 (Ekert 91) protocol** with **per-round Bell-inequality verification** and eavesdropping detection.
 
 ---
