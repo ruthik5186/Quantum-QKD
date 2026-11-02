@@ -1,5 +1,5 @@
 /**
- * Socket.IO client setup for UC025 QKD Platform.
+ * Socket.IO client setup for Dynamic E91 QKD Platform.
  */
 
 import { io } from 'socket.io-client';

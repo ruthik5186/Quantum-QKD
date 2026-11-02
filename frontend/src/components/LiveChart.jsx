@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 /**
- * LiveChart Component:
+ * LiveChart Component (Ronas IT Clean Edition):
  * Real-Time Bell Inequality (CHSH S-statistic) & Quantum Bit Error Rate (QBER) Visualizer.
- * Streams every single quantum round dynamically.
+ * Streams every single quantum round dynamically on a crisp light SVG canvas.
  */
 export default function LiveChart({ rounds = [], currentRound = null }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -56,49 +56,49 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
   const violationMargin = sValue - 2.0;
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-2xl backdrop-blur-md">
+    <div className="bg-white border border-[#e2e7f4] rounded-2xl p-5 shadow-xs text-[#151722]">
       {/* Chart Header with Telemetry Badges */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-slate-800 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-[#edf0f8] pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+          <div className="w-8 h-8 rounded-xl bg-[#eef1fc] border border-[#dce2f9] flex items-center justify-center text-[#5e67ea] text-sm">
             📈
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+            <h3 className="text-sm font-bold text-[#151722] tracking-wide flex items-center gap-2">
               Bell Inequality & Error Rate Telemetry
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+              <span className="w-2 h-2 rounded-full bg-[#5e67ea] animate-ping"></span>
             </h3>
-            <p className="text-[11px] text-slate-400">
-              Per-round computation of CHSH Bell parameter <span className="font-mono text-cyan-300">S</span> and quantum bit error rate
+            <p className="text-[11px] text-[#717892]">
+              Per-round computation of CHSH Bell parameter <span className="font-mono text-[#5e67ea] font-semibold">S</span> and QBER
             </p>
           </div>
         </div>
 
         {/* Live Gauges */}
         <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-          <div className="bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-2">
-            <span className="text-slate-500">Round:</span>
-            <span className="text-white font-bold">{currentRound?.round_num ?? rounds.length}</span>
+          <div className="bg-[#f0f3fa] px-3 py-1.5 rounded-xl border border-[#e2e7f4] flex items-center gap-2">
+            <span className="text-[#717892]">Round:</span>
+            <span className="text-[#151722] font-bold">{currentRound?.round_num ?? rounds.length}</span>
           </div>
 
-          <div className={`px-3 py-1.5 rounded-lg border flex items-center gap-2 ${
+          <div className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 ${
             sValue >= 2.0
-              ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300'
-              : 'bg-rose-950/60 border-rose-500/50 text-rose-300'
+              ? 'bg-[#dcfce7] border-[#bbf7d0] text-[#15803d]'
+              : 'bg-[#fef2f2] border-[#fecaca] text-[#991b1b]'
           }`}>
-            <span className="text-slate-400">CHSH S:</span>
+            <span className="opacity-80">CHSH S:</span>
             <span className="font-bold text-sm">{sValue.toFixed(4)}</span>
             <span className="text-[10px] opacity-80">
               {violationMargin >= 0 ? `(+${violationMargin.toFixed(3)})` : `(${violationMargin.toFixed(3)})`}
             </span>
           </div>
 
-          <div className={`px-3 py-1.5 rounded-lg border flex items-center gap-2 ${
+          <div className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 ${
             (currentRound?.qber ?? 0.0) <= 0.11
-              ? 'bg-cyan-950/60 border-cyan-500/50 text-cyan-300'
-              : 'bg-rose-950/60 border-rose-500/50 text-rose-300'
+              ? 'bg-[#e0e7ff] border-[#c7d2fe] text-[#4338ca]'
+              : 'bg-[#fef2f2] border-[#fecaca] text-[#991b1b]'
           }`}>
-            <span className="text-slate-400">QBER:</span>
+            <span className="opacity-80">QBER:</span>
             <span className="font-bold text-sm">{((currentRound?.qber ?? 0.0) * 100).toFixed(2)}%</span>
           </div>
         </div>
@@ -107,31 +107,27 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
       {/* CHSH Graph (S Parameter) */}
       <div className="mb-5">
         <div className="flex justify-between items-center text-xs mb-1.5">
-          <span className="font-semibold text-cyan-300 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></span>
+          <span className="font-bold text-[#5e67ea] flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#5e67ea]"></span>
             CHSH Correlation Parameter (S = |E₁₁ - E₁₃ + E₃₁ + E₃₃|)
           </span>
-          <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
-            <span className="text-cyan-400 flex items-center gap-1">
-              <span className="w-2 h-0.5 bg-cyan-400 inline-block"></span> 2√2 ≈ 2.8284 (Quantum Limit)
+          <div className="flex items-center gap-3 text-[11px] font-mono text-[#717892]">
+            <span className="text-[#5e67ea] flex items-center gap-1 font-semibold">
+              <span className="w-2 h-0.5 bg-[#5e67ea] inline-block"></span> 2√2 ≈ 2.8284 (Quantum Limit)
             </span>
-            <span className="text-amber-400 flex items-center gap-1">
-              <span className="w-2 h-0.5 bg-amber-400 inline-block"></span> S = 2.0 (Bell Bound)
+            <span className="text-[#f59e0b] flex items-center gap-1 font-semibold">
+              <span className="w-2 h-0.5 bg-[#f59e0b] inline-block"></span> S = 2.0 (Bell Bound)
             </span>
           </div>
         </div>
 
-        <div className="relative w-full bg-slate-950 border border-slate-800 rounded-xl overflow-hidden p-1 shadow-inner">
+        <div className="relative w-full bg-[#f8fafd] border border-[#e2e7f4] rounded-2xl overflow-hidden p-1 shadow-inner">
           <svg viewBox={`0 0 ${width} ${heightCHSH}`} className="w-full h-44">
             <defs>
-              <linearGradient id="chshGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.0" />
+              <linearGradient id="chshGradientLight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#5e67ea" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#5e67ea" stopOpacity="0.0" />
               </linearGradient>
-              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
             </defs>
 
             {/* Shaded Quantum Violation Zone (S > 2.0) */}
@@ -140,7 +136,7 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
               y={padding.top}
               width={width - padding.left - padding.right}
               height={Math.max(0, yS_classicalLimit - padding.top)}
-              fill="rgba(6, 182, 212, 0.04)"
+              fill="rgba(94, 103, 234, 0.04)"
             />
 
             {/* Reference Line: 2.8284 (Tsirelson's Quantum Maximum) */}
@@ -149,12 +145,12 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
               y1={yS_quantumMax}
               x2={width - padding.right}
               y2={yS_quantumMax}
-              stroke="#06b6d4"
+              stroke="#5e67ea"
               strokeDasharray="4 4"
               strokeWidth="1.2"
-              opacity="0.7"
+              opacity="0.8"
             />
-            <text x={width - padding.right - 5} y={yS_quantumMax - 4} fill="#06b6d4" fontSize="9" textAnchor="end" fontFamily="monospace">
+            <text x={width - padding.right - 5} y={yS_quantumMax - 4} fill="#5e67ea" fontSize="9" textAnchor="end" fontFamily="monospace" fontWeight="bold">
               Tsirelson's Bound (2.8284)
             </text>
 
@@ -168,15 +164,15 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
               strokeDasharray="4 4"
               strokeWidth="1.5"
             />
-            <text x={width - padding.right - 5} y={yS_classicalLimit - 4} fill="#f59e0b" fontSize="9" textAnchor="end" fontFamily="monospace">
-              Classical Limit S = 2.0 (Eavesdropping / Separable Bound)
+            <text x={width - padding.right - 5} y={yS_classicalLimit - 4} fill="#f59e0b" fontSize="9" textAnchor="end" fontFamily="monospace" fontWeight="bold">
+              Classical Limit S = 2.0 (Eavesdropping Bound)
             </text>
 
             {/* Y Axis Labels */}
-            <text x={padding.left - 8} y={getY_CHSH(3.0)} fill="#64748b" fontSize="9" textAnchor="end" fontFamily="monospace">3.0</text>
-            <text x={padding.left - 8} y={getY_CHSH(2.8284)} fill="#06b6d4" fontSize="9" textAnchor="end" fontFamily="monospace">2.82</text>
-            <text x={padding.left - 8} y={getY_CHSH(2.0)} fill="#f59e0b" fontSize="9" textAnchor="end" fontFamily="monospace">2.00</text>
-            <text x={padding.left - 8} y={getY_CHSH(1.2)} fill="#64748b" fontSize="9" textAnchor="end" fontFamily="monospace">1.20</text>
+            <text x={padding.left - 8} y={getY_CHSH(3.0)} fill="#717892" fontSize="9" textAnchor="end" fontFamily="monospace">3.0</text>
+            <text x={padding.left - 8} y={getY_CHSH(2.8284)} fill="#5e67ea" fontSize="9" textAnchor="end" fontFamily="monospace" fontWeight="bold">2.82</text>
+            <text x={padding.left - 8} y={getY_CHSH(2.0)} fill="#f59e0b" fontSize="9" textAnchor="end" fontFamily="monospace" fontWeight="bold">2.00</text>
+            <text x={padding.left - 8} y={getY_CHSH(1.2)} fill="#717892" fontSize="9" textAnchor="end" fontFamily="monospace">1.20</text>
 
             {/* S-Curve Path */}
             {chshPath && (
@@ -184,14 +180,14 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
                 <path
                   d={chshPath}
                   fill="none"
-                  stroke="#0891b2"
+                  stroke="#5e67ea"
                   strokeWidth="5"
-                  opacity="0.25"
+                  opacity="0.15"
                 />
                 <path
                   d={chshPath}
                   fill="none"
-                  stroke="#22d3ee"
+                  stroke="#5e67ea"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -209,9 +205,9 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
                   key={i}
                   cx={cx}
                   cy={cy}
-                  r={isCompromised ? 3.5 : 2}
-                  fill={isCompromised ? '#f43f5e' : '#22d3ee'}
-                  stroke="#020617"
+                  r={isCompromised ? 3.5 : 2.5}
+                  fill={isCompromised ? '#ef4444' : '#5e67ea'}
+                  stroke="#ffffff"
                   strokeWidth="1"
                   className="cursor-pointer transition-all hover:scale-150"
                   onMouseEnter={() => setHoveredIndex(i)}
@@ -226,16 +222,16 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
       {/* QBER Graph */}
       <div>
         <div className="flex justify-between items-center text-xs mb-1.5">
-          <span className="font-semibold text-rose-300 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-400 shadow-[0_0_8px_#f43f5e]"></span>
+          <span className="font-bold text-[#ef4444] flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span>
             Quantum Bit Error Rate (QBER on Matching Key Bases)
           </span>
-          <span className="text-[11px] font-mono text-rose-400">
+          <span className="text-[11px] font-mono text-[#ef4444] font-semibold">
             Standard QKD Abort Threshold: 11.0%
           </span>
         </div>
 
-        <div className="relative w-full bg-slate-950 border border-slate-800 rounded-xl overflow-hidden p-1 shadow-inner">
+        <div className="relative w-full bg-[#f8fafd] border border-[#e2e7f4] rounded-2xl overflow-hidden p-1 shadow-inner">
           <svg viewBox={`0 0 ${width} ${heightQBER}`} className="w-full h-36">
             {/* 11% Abort Threshold Line */}
             <line
@@ -243,19 +239,19 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
               y1={yQ_threshold}
               x2={width - padding.right}
               y2={yQ_threshold}
-              stroke="#f43f5e"
+              stroke="#ef4444"
               strokeDasharray="4 4"
               strokeWidth="1.5"
             />
-            <text x={width - padding.right - 5} y={yQ_threshold - 4} fill="#f43f5e" fontSize="9" textAnchor="end" fontFamily="monospace">
+            <text x={width - padding.right - 5} y={yQ_threshold - 4} fill="#ef4444" fontSize="9" textAnchor="end" fontFamily="monospace" fontWeight="bold">
               Abort Limit: 11%
             </text>
 
             {/* Y Axis Labels */}
-            <text x={padding.left - 8} y={getY_QBER(0.40)} fill="#64748b" fontSize="9" textAnchor="end" fontFamily="monospace">40%</text>
-            <text x={padding.left - 8} y={getY_QBER(0.25)} fill="#64748b" fontSize="9" textAnchor="end" fontFamily="monospace">25%</text>
-            <text x={padding.left - 8} y={getY_QBER(0.11)} fill="#f43f5e" fontSize="9" textAnchor="end" fontFamily="monospace">11%</text>
-            <text x={padding.left - 8} y={getY_QBER(0.0)} fill="#64748b" fontSize="9" textAnchor="end" fontFamily="monospace">0%</text>
+            <text x={padding.left - 8} y={getY_QBER(0.40)} fill="#717892" fontSize="9" textAnchor="end" fontFamily="monospace">40%</text>
+            <text x={padding.left - 8} y={getY_QBER(0.25)} fill="#717892" fontSize="9" textAnchor="end" fontFamily="monospace">25%</text>
+            <text x={padding.left - 8} y={getY_QBER(0.11)} fill="#ef4444" fontSize="9" textAnchor="end" fontFamily="monospace" fontWeight="bold">11%</text>
+            <text x={padding.left - 8} y={getY_QBER(0.0)} fill="#717892" fontSize="9" textAnchor="end" fontFamily="monospace">0%</text>
 
             {/* QBER Curve */}
             {qberPath && (
@@ -263,14 +259,14 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
                 <path
                   d={qberPath}
                   fill="none"
-                  stroke="#e11d48"
+                  stroke="#ef4444"
                   strokeWidth="5"
-                  opacity="0.25"
+                  opacity="0.15"
                 />
                 <path
                   d={qberPath}
                   fill="none"
-                  stroke="#fb7185"
+                  stroke="#ef4444"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -288,9 +284,9 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
                   key={i}
                   cx={cx}
                   cy={cy}
-                  r={isHigh ? 3.5 : 2}
-                  fill={isHigh ? '#f43f5e' : '#fb7185'}
-                  stroke="#020617"
+                  r={isHigh ? 3.5 : 2.5}
+                  fill={isHigh ? '#ef4444' : '#10b981'}
+                  stroke="#ffffff"
                   strokeWidth="1"
                   className="cursor-pointer transition-all hover:scale-150"
                   onMouseEnter={() => setHoveredIndex(i)}
@@ -304,30 +300,30 @@ export default function LiveChart({ rounds = [], currentRound = null }) {
 
       {/* Live Inspector Strip */}
       {activeData && (
-        <div className="mt-4 p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono flex flex-wrap items-center justify-between gap-3 text-slate-300 shadow-md">
+        <div className="mt-4 p-3.5 bg-[#f0f3fa] border border-[#e2e7f4] rounded-xl text-xs font-mono flex flex-wrap items-center justify-between gap-3 text-[#151722] shadow-xs">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-            <span className="text-slate-500">Inspecting Round:</span>
-            <span className="text-white font-bold">#{activeData.round_num}</span>
+            <span className="w-2 h-2 rounded-full bg-[#5e67ea]"></span>
+            <span className="text-[#717892]">Inspecting Round:</span>
+            <span className="font-bold text-[#151722]">#{activeData.round_num}</span>
           </div>
 
           <div>
-            <span className="text-slate-500">Alice:</span>{' '}
-            <span className="text-cyan-400 font-semibold">{activeData.alice_basis}</span>
-            <span className="text-slate-600 mx-1.5">vs</span>
-            <span className="text-slate-500">Bob:</span>{' '}
-            <span className="text-emerald-400 font-semibold">{activeData.bob_basis}</span>
+            <span className="text-[#717892]">Alice:</span>{' '}
+            <span className="text-[#5e67ea] font-semibold">{activeData.alice_basis}</span>
+            <span className="text-[#8a90a7] mx-1.5">vs</span>
+            <span className="text-[#717892]">Bob:</span>{' '}
+            <span className="text-[#10b981] font-semibold">{activeData.bob_basis}</span>
           </div>
 
           <div>
-            <span className="text-slate-500">Protocol Action:</span>{' '}
-            <span className={activeData.discarded ? 'text-rose-400 font-bold' : 'text-emerald-400 font-bold'}>
-              {activeData.discarded ? 'DISCARDED (Compromised / Perturbed)' : 'SIFTED (Valid Key Material)'}
+            <span className="text-[#717892]">Protocol Action:</span>{' '}
+            <span className={activeData.discarded ? 'text-[#ef4444] font-bold' : 'text-[#10b981] font-bold'}>
+              {activeData.discarded ? 'DISCARDED (Compromised)' : 'SIFTED (Valid Key)'}
             </span>
           </div>
 
           {activeData.reason && activeData.reason !== 'Normal quantum transmission' && (
-            <div className="w-full text-[11px] text-rose-300 bg-rose-950/40 border border-rose-900/60 p-1.5 rounded">
+            <div className="w-full text-[11px] text-[#991b1b] bg-[#fee2e2] border border-[#fecaca] p-2 rounded-lg">
               Trigger: {activeData.reason}
             </div>
           )}

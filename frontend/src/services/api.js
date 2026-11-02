@@ -1,5 +1,5 @@
 /**
- * REST API client for UC025 QKD Platform.
+ * REST API client for Dynamic E91 QKD Platform.
  */
 
 let rawBaseUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');

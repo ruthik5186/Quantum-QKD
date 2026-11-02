@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { socket } from './services/socket';
 import {
   startSession,
@@ -49,6 +49,41 @@ export default function App() {
   // UI state
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(true);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+
+  // Re-adjustable side panel width (desktop resizer)
+  const [sidePanelWidth, setSidePanelWidth] = useState(440);
+  const [isDraggingSidePanel, setIsDraggingSidePanel] = useState(false);
+
+  // Theme state: 'light' | 'dark'
+  const [isDark, setIsDark] = useState(() => {
+    try {
+      const saved = localStorage.getItem('qkd_theme');
+      if (saved) return saved === 'dark';
+      return false; // Default to clean light mode
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleTheme = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('qkd_theme', next ? 'dark' : 'light');
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      document.body.className = 'bg-[#0a0d14] text-[#f8fafc] antialiased select-none';
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.className = 'bg-[#e6ebf5] text-[#0f172a] antialiased select-none';
+    }
+  }, [isDark]);
 
   // Register user presence and track online operators
   useEffect(() => {
@@ -343,39 +378,103 @@ export default function App() {
     }
   };
 
+  // Drag resizer for the Quantum Channel Side Panel
+  const handleMouseDownSidePanelResize = (e) => {
+    e.preventDefault();
+    setIsDraggingSidePanel(true);
+    const startX = e.clientX;
+    const startW = sidePanelWidth;
+
+    const onMouseMove = (moveEvent) => {
+      const delta = startX - moveEvent.clientX;
+      const newWidth = Math.min(680, Math.max(340, startW + delta));
+      setSidePanelWidth(newWidth);
+    };
+
+    const onMouseUp = () => {
+      setIsDraggingSidePanel(false);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   // If user not authenticated, show Login/Signup portal
   if (!currentUser) {
     return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-[#0c1317] overflow-hidden font-sans text-[#e9edef] antialiased">
+    <div className={`h-screen w-screen flex flex-col overflow-hidden font-sans antialiased transition-colors duration-200 ${
+      isDark ? 'bg-[#0a0d14] text-[#f8fafc]' : 'bg-[#e6ebf5] text-[#0f172a]'
+    } ${
+      isDraggingSidePanel ? 'cursor-col-resize select-none' : ''
+    }`}>
       {/* Top Protocol Status Bar */}
-      <header className="h-11 sm:h-12 bg-[#202c33] border-b border-[#222d34] px-3 sm:px-4 flex items-center justify-between text-xs flex-shrink-0 z-20">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#00a884] animate-pulse"></span>
-          <span className="font-bold text-white tracking-wide text-[11px] sm:text-xs">
+      <header className={`h-13 px-4 sm:px-6 flex items-center justify-between text-xs flex-shrink-0 z-20 shadow-xs border-b transition-colors ${
+        isDark ? 'bg-[#10141f] border-[#1e2638] text-[#f8fafc]' : 'bg-white border-[#dce2f9] text-[#0f172a]'
+      }`}>
+        <div className="flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse shadow-sm shadow-[#10b981]/50"></span>
+          <span className={`font-extrabold tracking-wider text-xs ${isDark ? 'text-[#f8fafc]' : 'text-[#0f172a]'}`}>
             QUANTUM SECURE NETWORK
+          </span>
+          <span className={`hidden sm:inline-block text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold border ${
+            isDark
+              ? 'bg-[#1e1b4b] text-[#a5b4fc] border-[#312e81]'
+              : 'bg-[#eef1fc] text-[#4338ca] border-[#dce2f9]'
+          }`}>
+            E91 Protocol Active
           </span>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             onClick={() => setShowHistoryModal(true)}
-            className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#111b21] hover:bg-[#2a3942] text-[#8696a0] hover:text-[#e9edef] border border-[#222d34] rounded transition font-mono flex items-center gap-1 text-[11px]"
+            className={`px-3 py-1.5 rounded-xl transition font-bold flex items-center gap-1.5 text-xs shadow-xs border ${
+              isDark
+                ? 'bg-[#161c2b] text-[#f8fafc] border-[#252f44] hover:bg-[#20293d]'
+                : 'bg-[#f0f3fa] hover:bg-[#e4e8f7] text-[#0f172a] hover:text-[#4338ca] border-[#dce2f9]'
+            }`}
           >
             <span>📜</span> <span className="hidden sm:inline">Audit </span>History
           </button>
 
-          <div className="text-[10px] sm:text-[11px] font-mono bg-[#111b21] px-2 py-0.5 rounded border border-[#222d34] text-[#00a884] font-bold max-w-[100px] sm:max-w-none truncate">
+          {/* User Name Pill */}
+          <div className={`text-xs font-mono px-3 py-1.5 rounded-xl font-bold max-w-[140px] sm:max-w-none truncate border ${
+            isDark
+              ? 'bg-[#1e1b4b] text-[#c7d2fe] border-[#312e81]'
+              : 'bg-[#eef1fc] text-[#4338ca] border-[#dce2f9]'
+          }`}>
             {currentUser.name}
           </div>
+
+          {/* Perfect Dark / Light Mode Toggle Button (Beside User in Top Right) */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-extrabold shadow-xs ${
+              isDark
+                ? 'bg-[#1e2738] border-[#334155] text-[#fbbf24] hover:bg-[#28354d]'
+                : 'bg-[#f0f3fa] border-[#dce2f9] text-[#334155] hover:text-[#0f172a] hover:bg-[#e4e8f7]'
+            }`}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            <span className="text-sm">{isDark ? '☀️' : '🌙'}</span>
+            <span className="font-mono text-[11px] hidden md:inline">
+              {isDark ? 'Light' : 'Dark'}
+            </span>
+          </button>
         </div>
       </header>
 
-      {/* Main WhatsApp-style Chat Layout with QKD Side Panel */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* WhatsApp Chat Conversation */}
+      {/* Main App Container with 3 Curvy Floating Big Boxes & Ultra-Tight 4px Gaps */}
+      <div className={`flex-1 flex overflow-hidden relative p-1 gap-1 transition-colors ${
+        isDark ? 'bg-[#0a0d14]' : 'bg-[#e6ebf5]'
+      }`}>
+        {/* Box 1 (Chat List / Settings) & Box 2 (Chat Page) */}
         <WhatsAppChat
           currentUser={currentUser}
           onLogout={handleLogout}
@@ -397,49 +496,84 @@ export default function App() {
           currentRound={currentRound}
           injectEve={injectEve}
           onClearChat={handleClearChat}
+          isDark={isDark}
+          onToggleTheme={toggleTheme}
         />
 
         {/* Mobile Backdrop for Side Panel Drawer */}
         {isSidePanelOpen && (
           <div
             onClick={() => setIsSidePanelOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-opacity"
+            className="fixed inset-0 bg-[#0f172a]/50 backdrop-blur-xs z-30 md:hidden transition-opacity"
             aria-hidden="true"
           />
         )}
 
-        {/* Quantum Channel & Real Chart Side Panel */}
-        <QkdSidePanel
-          isOpen={isSidePanelOpen}
-          onClose={() => setIsSidePanelOpen(false)}
-          sessionId={activeSessionId}
-          sessionStatus={sessionStatus}
-          rounds={rounds}
-          currentRound={currentRound}
-          keyLengthBits={keyLengthBits}
-          targetBits={targetBits}
-          setTargetBits={setTargetBits}
-          injectEve={injectEve}
-          setInjectEve={setInjectEve}
-          onStartSession={handleStartSession}
-          isStarting={isStarting}
-          activeAlert={activeAlert}
-          siteA={siteA}
-          siteB={siteB}
-        />
+        {/* Re-adjustable Border Handle (between Box 2 Chat and Box 3 Quantum Channel) */}
+        {isSidePanelOpen && (
+          <div
+            onMouseDown={handleMouseDownSidePanelResize}
+            className={`hidden md:flex items-center justify-center w-1 cursor-col-resize group rounded-full transition-colors flex-shrink-0 select-none z-30 ${
+              isDark ? 'hover:bg-[#6366f1]/40' : 'hover:bg-[#5e67ea]/30'
+            }`}
+            title="Drag to resize Quantum Channel & E91 Session panel"
+          >
+            <div className={`w-0.5 h-8 rounded-full transition-all ${
+              isDark ? 'bg-[#252f44] group-hover:bg-[#818cf8] group-hover:w-1' : 'bg-[#cbd5e1] group-hover:bg-[#5e67ea] group-hover:w-1'
+            }`}></div>
+          </div>
+        )}
+
+        {/* Box 3: Curvy Quantum Channel & E91 Session Page */}
+        <div
+          style={{ width: isSidePanelOpen ? `${sidePanelWidth}px` : 0 }}
+          className={`transition-all duration-150 flex-shrink-0 h-full overflow-hidden ${
+            isSidePanelOpen ? 'flex' : 'hidden'
+          }`}
+        >
+          <div className={`w-full h-full rounded-[22px] border shadow-sm overflow-hidden flex flex-col transition-colors ${
+            isDark ? 'border-[#1e2638] bg-[#0f131e]' : 'border-[#d2e0f0] bg-[#edf4fb]'
+          }`}>
+            <QkdSidePanel
+              isOpen={isSidePanelOpen}
+              onClose={() => setIsSidePanelOpen(false)}
+              sessionId={activeSessionId}
+              sessionStatus={sessionStatus}
+              rounds={rounds}
+              currentRound={currentRound}
+              keyLengthBits={keyLengthBits}
+              targetBits={targetBits}
+              setTargetBits={setTargetBits}
+              injectEve={injectEve}
+              setInjectEve={setInjectEve}
+              onStartSession={handleStartSession}
+              isStarting={isStarting}
+              activeAlert={activeAlert}
+              siteA={siteA}
+              siteB={siteB}
+              isDark={isDark}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Audit History Modal */}
       {showHistoryModal && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#111b21] border border-[#222d34] rounded-2xl max-w-4xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
-            <div className="flex justify-between items-center border-b border-[#222d34] pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+        <div className="fixed inset-0 bg-[#0f172a]/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className={`rounded-3xl max-w-4xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col border transition-colors animate-in fade-in zoom-in-95 duration-150 ${
+            isDark ? 'bg-[#121622] border-[#252f44] text-[#f8fafc]' : 'bg-white border-[#dce2f9] text-[#0f172a]'
+          }`}>
+            <div className={`flex justify-between items-center border-b pb-3 ${
+              isDark ? 'border-[#1e2638]' : 'border-[#edf0f8]'
+            }`}>
+              <h3 className="text-base font-bold flex items-center gap-2">
                 <span>📜</span> PostgreSQL Audit Log & Past Sessions
               </h3>
               <button
                 onClick={() => setShowHistoryModal(false)}
-                className="text-[#8696a0] hover:text-white p-1 rounded-full text-lg"
+                className={`p-1.5 rounded-full text-base transition font-bold ${
+                  isDark ? 'text-[#94a3b8] hover:text-white hover:bg-[#1a2133]' : 'text-[#64748b] hover:text-[#0f172a] hover:bg-[#f2f4fa]'
+                }`}
               >
                 ✕
               </button>
@@ -449,6 +583,7 @@ export default function App() {
               <SessionHistory
                 currentSessionId={activeSessionId}
                 onSelectSession={handleSelectHistorySession}
+                isDark={isDark}
               />
             </div>
           </div>

@@ -21,6 +21,7 @@
     "react-dom": "^18.3.1",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.3.3",
+    "uc025-qkd-quantum-platform": "file:..",
     "vite": "^5.4.11"
   }
 }

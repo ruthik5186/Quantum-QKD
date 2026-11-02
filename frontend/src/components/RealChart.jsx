@@ -25,12 +25,12 @@ ChartJS.register(
 );
 
 /**
- * RealChart Component:
+ * RealChart Component (Ronas IT Clean Edition):
  * Production-grade HTML5 Canvas graphs powered by Chart.js.
  * Renders real Bell inequality CHSH S-statistic and QBER with actual axes,
- * grid lines, crosshairs, and live points.
+ * grid lines, crosshairs, and live points in a crisp light design.
  */
-export default function RealChart({ rounds = [], currentRound = null }) {
+export default function RealChart({ rounds = [], currentRound = null, isDark = false }) {
   const [activeMetric, setActiveMetric] = useState('both'); // 'both' | 'chsh' | 'qber'
 
   // Take recent 50 rounds for smooth, readable real-time plotting
@@ -47,18 +47,18 @@ export default function RealChart({ rounds = [], currentRound = null }) {
       {
         label: 'CHSH S-statistic',
         data: chshData,
-        borderColor: '#00d2d3',
-        backgroundColor: 'rgba(0, 210, 211, 0.08)',
+        borderColor: '#5e67ea',
+        backgroundColor: 'rgba(94, 103, 234, 0.08)',
         fill: true,
         tension: 0.35,
         borderWidth: 2.5,
         pointRadius: sample.length > 30 ? 2 : 3.5,
         pointHoverRadius: 6,
-        pointBackgroundColor: sample.map((r) => (r.chsh_s < 2.0 || r.anomaly_flagged ? '#ea4335' : '#00d2d3')),
-        pointBorderColor: '#0b141a',
+        pointBackgroundColor: sample.map((r) => (r.chsh_s < 2.0 || r.anomaly_flagged ? '#ef4444' : '#5e67ea')),
+        pointBorderColor: '#ffffff',
       },
       {
-        label: 'Classical Bound (S = 2.0)',
+        label: 'Classical Limit (S = 2.0)',
         data: Array(sample.length).fill(2.0),
         borderColor: '#f59e0b',
         borderWidth: 1.5,
@@ -69,7 +69,7 @@ export default function RealChart({ rounds = [], currentRound = null }) {
       {
         label: 'Quantum Max (2√2 ≈ 2.83)',
         data: Array(sample.length).fill(2.8284),
-        borderColor: '#a855f7',
+        borderColor: '#8b5cf6',
         borderWidth: 1.2,
         borderDash: [3, 3],
         pointRadius: 0,
@@ -84,28 +84,30 @@ export default function RealChart({ rounds = [], currentRound = null }) {
     animation: { duration: 300 },
     scales: {
       x: {
-        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        ticks: { color: '#8696a0', font: { family: 'monospace', size: 9 }, maxTicksLimit: 10 },
+        grid: { color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)' },
+        ticks: { color: isDark ? '#94a3b8' : '#717892', font: { family: 'monospace', size: 9 }, maxTicksLimit: 10 },
       },
       y: {
         min: 1.0,
         max: 3.2,
-        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        ticks: { color: '#8696a0', font: { family: 'monospace', size: 10 }, stepSize: 0.4 },
+        grid: { color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)' },
+        ticks: { color: isDark ? '#94a3b8' : '#717892', font: { family: 'monospace', size: 10 }, stepSize: 0.4 },
       },
     },
     plugins: {
       legend: {
         position: 'top',
-        labels: { color: '#e9edef', font: { size: 10, family: 'sans-serif' }, boxWidth: 12, usePointStyle: true },
+        labels: { color: isDark ? '#f8fafc' : '#151722', font: { size: 10, family: 'Outfit, sans-serif' }, boxWidth: 12, usePointStyle: true },
       },
       tooltip: {
-        backgroundColor: '#111b21',
-        titleColor: '#00d2d3',
-        bodyColor: '#e9edef',
-        borderColor: '#222d34',
+        backgroundColor: isDark ? '#141926' : '#ffffff',
+        titleColor: '#5e67ea',
+        bodyColor: isDark ? '#f8fafc' : '#151722',
+        borderColor: isDark ? '#252f44' : '#e2e7f4',
         borderWidth: 1,
         padding: 10,
+        boxPadding: 4,
+        usePointStyle: true,
         callbacks: {
           label: (ctx) => ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(4)}`,
         },
@@ -120,20 +122,20 @@ export default function RealChart({ rounds = [], currentRound = null }) {
       {
         label: 'QBER Error Rate (%)',
         data: qberData,
-        borderColor: '#ea4335',
-        backgroundColor: 'rgba(234, 67, 53, 0.08)',
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239, 68, 68, 0.08)',
         fill: true,
         tension: 0.35,
         borderWidth: 2.5,
         pointRadius: sample.length > 30 ? 2 : 3.5,
         pointHoverRadius: 6,
-        pointBackgroundColor: sample.map((r) => (r.qber > 0.11 || r.anomaly_flagged ? '#ea4335' : '#34d399')),
-        pointBorderColor: '#0b141a',
+        pointBackgroundColor: sample.map((r) => (r.qber > 0.11 || r.anomaly_flagged ? '#ef4444' : '#10b981')),
+        pointBorderColor: '#ffffff',
       },
       {
         label: 'Abort Limit (11%)',
         data: Array(sample.length).fill(11.0),
-        borderColor: '#ea4335',
+        borderColor: '#f87171',
         borderWidth: 1.5,
         borderDash: [5, 5],
         pointRadius: 0,
@@ -148,15 +150,15 @@ export default function RealChart({ rounds = [], currentRound = null }) {
     animation: { duration: 300 },
     scales: {
       x: {
-        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        ticks: { color: '#8696a0', font: { family: 'monospace', size: 9 }, maxTicksLimit: 10 },
+        grid: { color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)' },
+        ticks: { color: isDark ? '#94a3b8' : '#717892', font: { family: 'monospace', size: 9 }, maxTicksLimit: 10 },
       },
       y: {
         min: 0,
         max: 40,
-        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+        grid: { color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)' },
         ticks: {
-          color: '#8696a0',
+          color: isDark ? '#94a3b8' : '#717892',
           font: { family: 'monospace', size: 10 },
           callback: (val) => `${val}%`,
           stepSize: 10,
@@ -166,15 +168,17 @@ export default function RealChart({ rounds = [], currentRound = null }) {
     plugins: {
       legend: {
         position: 'top',
-        labels: { color: '#e9edef', font: { size: 10, family: 'sans-serif' }, boxWidth: 12, usePointStyle: true },
+        labels: { color: isDark ? '#f8fafc' : '#151722', font: { size: 10, family: 'Outfit, sans-serif' }, boxWidth: 12, usePointStyle: true },
       },
       tooltip: {
-        backgroundColor: '#111b21',
-        titleColor: '#ea4335',
-        bodyColor: '#e9edef',
-        borderColor: '#222d34',
+        backgroundColor: isDark ? '#141926' : '#ffffff',
+        titleColor: '#ef4444',
+        bodyColor: isDark ? '#f8fafc' : '#151722',
+        borderColor: isDark ? '#252f44' : '#e2e7f4',
         borderWidth: 1,
         padding: 10,
+        boxPadding: 4,
+        usePointStyle: true,
         callbacks: {
           label: (ctx) => ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(2)}%`,
         },
@@ -183,33 +187,51 @@ export default function RealChart({ rounds = [], currentRound = null }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {/* Metric Selector Tabs */}
-      <div className="flex items-center justify-between border-b border-[#222d34] pb-2">
-        <span className="text-xs font-semibold text-[#8696a0] uppercase tracking-wider">
-          Real Canvas Telemetry ({sample.length} rounds)
+      <div className={`flex items-center justify-between border-b pb-2 ${
+        isDark ? 'border-[#1e2638]' : 'border-[#edf0f8]'
+      }`}>
+        <span className={`text-[11px] font-extrabold uppercase tracking-wider font-mono ${
+          isDark ? 'text-[#f8fafc]' : 'text-[#0f172a]'
+        }`}>
+          Live Telemetry ({sample.length} rounds)
         </span>
-        <div className="flex items-center gap-1 bg-[#111b21] p-1 rounded-lg border border-[#222d34] text-xs">
+        <div className={`flex items-center gap-1 p-1 rounded-xl border text-xs ${
+          isDark ? 'bg-[#0f131e] border-[#252f44]' : 'bg-[#f0f3fa] border-[#dce2f9]'
+        }`}>
           <button
             onClick={() => setActiveMetric('both')}
-            className={`px-2.5 py-1 rounded-md transition font-medium ${
-              activeMetric === 'both' ? 'bg-[#00a884] text-white' : 'text-[#8696a0] hover:text-white'
+            className={`px-2.5 py-1 rounded-lg transition font-bold ${
+              activeMetric === 'both'
+                ? 'bg-[#5e67ea] text-white shadow-xs'
+                : isDark
+                ? 'text-[#94a3b8] hover:text-white'
+                : 'text-[#334155] hover:text-[#0f172a]'
             }`}
           >
             Dual View
           </button>
           <button
             onClick={() => setActiveMetric('chsh')}
-            className={`px-2.5 py-1 rounded-md transition font-medium ${
-              activeMetric === 'chsh' ? 'bg-[#00a884] text-white' : 'text-[#8696a0] hover:text-white'
+            className={`px-2.5 py-1 rounded-lg transition font-bold ${
+              activeMetric === 'chsh'
+                ? 'bg-[#5e67ea] text-white shadow-xs'
+                : isDark
+                ? 'text-[#94a3b8] hover:text-white'
+                : 'text-[#334155] hover:text-[#0f172a]'
             }`}
           >
             CHSH (S)
           </button>
           <button
             onClick={() => setActiveMetric('qber')}
-            className={`px-2.5 py-1 rounded-md transition font-medium ${
-              activeMetric === 'qber' ? 'bg-[#00a884] text-white' : 'text-[#8696a0] hover:text-white'
+            className={`px-2.5 py-1 rounded-lg transition font-bold ${
+              activeMetric === 'qber'
+                ? 'bg-[#5e67ea] text-white shadow-xs'
+                : isDark
+                ? 'text-[#94a3b8] hover:text-white'
+                : 'text-[#334155] hover:text-[#0f172a]'
             }`}
           >
             QBER (%)
@@ -219,10 +241,16 @@ export default function RealChart({ rounds = [], currentRound = null }) {
 
       {/* CHSH Canvas Graph */}
       {(activeMetric === 'both' || activeMetric === 'chsh') && (
-        <div className="bg-[#111b21] border border-[#222d34] rounded-xl p-3 shadow-md">
+        <div className={`border rounded-2xl p-3 shadow-xs transition-colors ${
+          isDark ? 'bg-[#0f131e] border-[#252f44]' : 'bg-[#f8fafd] border-[#dce2f9]'
+        }`}>
           <div className="flex justify-between items-center mb-1 text-xs">
-            <span className="font-semibold text-[#e9edef]">Bell CHSH Correlation (S)</span>
-            <span className="font-mono text-[11px] text-[#00d2d3]">
+            <span className={`font-extrabold ${isDark ? 'text-[#f8fafc]' : 'text-[#0f172a]'}`}>
+              Bell CHSH Correlation (S)
+            </span>
+            <span className={`font-mono text-[11px] font-extrabold ${
+              isDark ? 'text-[#a5b4fc]' : 'text-[#5e67ea]'
+            }`}>
               Current: {(currentRound?.chsh_s ?? 2.828).toFixed(4)}
             </span>
           </div>
@@ -230,7 +258,9 @@ export default function RealChart({ rounds = [], currentRound = null }) {
             {sample.length > 0 ? (
               <Line data={chshChartData} options={chshOptions} />
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-[#8696a0]">
+              <div className={`h-full flex items-center justify-center text-xs font-bold ${
+                isDark ? 'text-[#94a3b8]' : 'text-[#334155]'
+              }`}>
                 Awaiting quantum round transmission data...
               </div>
             )}
@@ -240,10 +270,14 @@ export default function RealChart({ rounds = [], currentRound = null }) {
 
       {/* QBER Canvas Graph */}
       {(activeMetric === 'both' || activeMetric === 'qber') && (
-        <div className="bg-[#111b21] border border-[#222d34] rounded-xl p-3 shadow-md">
+        <div className={`border rounded-2xl p-3 shadow-xs transition-colors ${
+          isDark ? 'bg-[#0f131e] border-[#252f44]' : 'bg-[#f8fafd] border-[#dce2f9]'
+        }`}>
           <div className="flex justify-between items-center mb-1 text-xs">
-            <span className="font-semibold text-[#e9edef]">Quantum Bit Error Rate (QBER)</span>
-            <span className="font-mono text-[11px] text-[#ea4335]">
+            <span className={`font-extrabold ${isDark ? 'text-[#f8fafc]' : 'text-[#0f172a]'}`}>
+              Quantum Bit Error Rate (QBER)
+            </span>
+            <span className="font-mono text-[11px] text-[#ef4444] font-extrabold">
               Current: {((currentRound?.qber ?? 0.0) * 100).toFixed(2)}%
             </span>
           </div>
@@ -251,7 +285,9 @@ export default function RealChart({ rounds = [], currentRound = null }) {
             {sample.length > 0 ? (
               <Line data={qberChartData} options={qberOptions} />
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-[#8696a0]">
+              <div className={`h-full flex items-center justify-center text-xs font-bold ${
+                isDark ? 'text-[#94a3b8]' : 'text-[#334155]'
+              }`}>
                 Awaiting quantum round transmission data...
               </div>
             )}
@@ -261,4 +297,3 @@ export default function RealChart({ rounds = [], currentRound = null }) {
     </div>
   );
 }
-
