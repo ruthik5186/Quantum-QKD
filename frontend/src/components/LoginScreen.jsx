@@ -102,18 +102,18 @@ export default function LoginScreen({ onLoginSuccess }) {
       <div className="h-1.5 bg-[#5e67ea] w-full" />
 
       {/* Main Split Layout: Title on Left, Auth Interface on Right */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-14 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16 my-auto">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-6 sm:py-14 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-16 my-auto">
         {/* Left Side: Title & Subtitle */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start text-center lg:text-left space-y-4">
-          <div className="w-13 h-13 rounded-2xl bg-[#eef1fc] border border-[#dce2f9] flex items-center justify-center text-[#5e67ea] shadow-xs">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <div className="w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start text-center lg:text-left space-y-3 sm:space-y-4">
+          <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-[#eef1fc] border border-[#dce2f9] flex items-center justify-center text-[#5e67ea] shadow-xs">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0f172a] tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#0f172a] tracking-tight leading-tight">
             QUANTUM SECURE CHAT PORTAL
           </h1>
-          <p className="text-base sm:text-lg text-[#4338ca] font-bold leading-relaxed">
+          <p className="text-sm sm:text-lg text-[#4338ca] font-bold leading-relaxed">
             Real Dynamic E91 Key Distribution Platform
           </p>
           <div className="pt-2 flex flex-col gap-2 text-xs text-[#334155] font-semibold">

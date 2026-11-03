@@ -46,9 +46,25 @@ export default function App() {
   // Real-time online presence state (Set of lowercase emails)
   const [onlineUserEmails, setOnlineUserEmails] = useState(new Set());
 
-  // UI state
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState(true);
+  // UI state: defaults to closed on mobile (< 1024px) for optimal chat experience
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return false;
+  });
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+
+  // Screen width tracking for smooth mobile/desktop transitions
+  const [windowWidth, setWindowWidth] = useState(() => {
+    return typeof window !== 'undefined' ? window.innerWidth : 1200;
+  });
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Re-adjustable side panel width (desktop resizer)
   const [sidePanelWidth, setSidePanelWidth] = useState(440);
@@ -334,7 +350,9 @@ export default function App() {
 
       setActiveSessionId(res.sessionId);
       socket.emit('join_session', res.sessionId);
-      setIsSidePanelOpen(true);
+      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+        setIsSidePanelOpen(true);
+      }
     } catch (err) {
       alert(`Failed to start quantum session: ${err.message}`);
       setSessionStatus('idle');
@@ -413,15 +431,15 @@ export default function App() {
       isDraggingSidePanel ? 'cursor-col-resize select-none' : ''
     }`}>
       {/* Top Protocol Status Bar */}
-      <header className={`h-13 px-4 sm:px-6 flex items-center justify-between text-xs flex-shrink-0 z-20 shadow-xs border-b transition-colors ${
+      <header className={`h-13 px-3 sm:px-6 flex items-center justify-between text-xs flex-shrink-0 z-20 shadow-xs border-b transition-colors ${
         isDark ? 'bg-[#10141f] border-[#1e2638] text-[#f8fafc]' : 'bg-white border-[#dce2f9] text-[#0f172a]'
       }`}>
-        <div className="flex items-center gap-2.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse shadow-sm shadow-[#10b981]/50"></span>
-          <span className={`font-extrabold tracking-wider text-xs ${isDark ? 'text-[#f8fafc]' : 'text-[#0f172a]'}`}>
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse shadow-sm shadow-[#10b981]/50 flex-shrink-0"></span>
+          <span className={`font-extrabold tracking-wider text-[11px] sm:text-xs truncate ${isDark ? 'text-[#f8fafc]' : 'text-[#0f172a]'}`}>
             QUANTUM SECURE NETWORK
           </span>
-          <span className={`hidden sm:inline-block text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold border ${
+          <span className={`hidden md:inline-block text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold border flex-shrink-0 ${
             isDark
               ? 'bg-[#1e1b4b] text-[#a5b4fc] border-[#312e81]'
               : 'bg-[#eef1fc] text-[#4338ca] border-[#dce2f9]'
@@ -430,10 +448,10 @@ export default function App() {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
           <button
             onClick={() => setShowHistoryModal(true)}
-            className={`px-3 py-1.5 rounded-xl transition font-bold flex items-center gap-1.5 text-xs shadow-xs border ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl transition font-bold flex items-center gap-1.5 text-xs shadow-xs border ${
               isDark
                 ? 'bg-[#161c2b] text-[#f8fafc] border-[#252f44] hover:bg-[#20293d]'
                 : 'bg-[#f0f3fa] hover:bg-[#e4e8f7] text-[#0f172a] hover:text-[#4338ca] border-[#dce2f9]'
@@ -443,7 +461,7 @@ export default function App() {
           </button>
 
           {/* User Name Pill */}
-          <div className={`text-xs font-mono px-3 py-1.5 rounded-xl font-bold max-w-[140px] sm:max-w-none truncate border ${
+          <div className={`text-xs font-mono px-2.5 sm:px-3 py-1.5 rounded-xl font-bold max-w-[90px] xs:max-w-[130px] sm:max-w-none truncate border ${
             isDark
               ? 'bg-[#1e1b4b] text-[#c7d2fe] border-[#312e81]'
               : 'bg-[#eef1fc] text-[#4338ca] border-[#dce2f9]'
@@ -455,7 +473,7 @@ export default function App() {
           <button
             type="button"
             onClick={toggleTheme}
-            className={`px-2.5 py-1.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-extrabold shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-extrabold shadow-xs ${
               isDark
                 ? 'bg-[#1e2738] border-[#334155] text-[#fbbf24] hover:bg-[#28354d]'
                 : 'bg-[#f0f3fa] border-[#dce2f9] text-[#334155] hover:text-[#0f172a] hover:bg-[#e4e8f7]'
@@ -470,8 +488,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main App Container with 3 Curvy Floating Big Boxes & Ultra-Tight 4px Gaps */}
-      <div className={`flex-1 flex overflow-hidden relative p-1 gap-1 transition-colors ${
+      {/* Main App Container with 3 Curvy Floating Big Boxes */}
+      <div className={`flex-1 flex overflow-hidden relative p-1 sm:p-1.5 gap-1 transition-colors ${
         isDark ? 'bg-[#0a0d14]' : 'bg-[#e6ebf5]'
       }`}>
         {/* Box 1 (Chat List / Settings) & Box 2 (Chat Page) */}
@@ -504,16 +522,16 @@ export default function App() {
         {isSidePanelOpen && (
           <div
             onClick={() => setIsSidePanelOpen(false)}
-            className="fixed inset-0 bg-[#0f172a]/50 backdrop-blur-xs z-30 md:hidden transition-opacity"
+            className="fixed inset-0 bg-[#0f172a]/60 backdrop-blur-xs z-30 md:hidden transition-opacity duration-200"
             aria-hidden="true"
           />
         )}
 
-        {/* Re-adjustable Border Handle (between Box 2 Chat and Box 3 Quantum Channel) */}
+        {/* Re-adjustable Border Handle (between Box 2 Chat and Box 3 Quantum Channel on Desktop) */}
         {isSidePanelOpen && (
           <div
             onMouseDown={handleMouseDownSidePanelResize}
-            className={`hidden md:flex items-center justify-center w-1 cursor-col-resize group rounded-full transition-colors flex-shrink-0 select-none z-30 ${
+            className={`hidden md:flex items-center justify-center w-1 cursor-col-resize group rounded-full transition-colors flex-shrink-0 select-none z-20 ${
               isDark ? 'hover:bg-[#6366f1]/40' : 'hover:bg-[#5e67ea]/30'
             }`}
             title="Drag to resize Quantum Channel & E91 Session panel"
@@ -524,14 +542,46 @@ export default function App() {
           </div>
         )}
 
-        {/* Box 3: Curvy Quantum Channel & E91 Session Page */}
+        {/* Box 3 DESKTOP: Curvy Quantum Channel & E91 Session Page (In-line) */}
         <div
           style={{ width: isSidePanelOpen ? `${sidePanelWidth}px` : 0 }}
-          className={`transition-all duration-150 flex-shrink-0 h-full overflow-hidden ${
-            isSidePanelOpen ? 'flex' : 'hidden'
+          className={`hidden md:flex transition-all duration-150 flex-shrink-0 h-full overflow-hidden ${
+            isSidePanelOpen ? 'opacity-100' : 'opacity-0'
           }`}
         >
           <div className={`w-full h-full rounded-[22px] border shadow-sm overflow-hidden flex flex-col transition-colors ${
+            isDark ? 'border-[#1e2638] bg-[#0f131e]' : 'border-[#d2e0f0] bg-[#edf4fb]'
+          }`}>
+            <QkdSidePanel
+              isOpen={isSidePanelOpen}
+              onClose={() => setIsSidePanelOpen(false)}
+              sessionId={activeSessionId}
+              sessionStatus={sessionStatus}
+              rounds={rounds}
+              currentRound={currentRound}
+              keyLengthBits={keyLengthBits}
+              targetBits={targetBits}
+              setTargetBits={setTargetBits}
+              injectEve={injectEve}
+              setInjectEve={setInjectEve}
+              onStartSession={handleStartSession}
+              isStarting={isStarting}
+              activeAlert={activeAlert}
+              siteA={siteA}
+              siteB={siteB}
+              isDark={isDark}
+            />
+          </div>
+        </div>
+
+        {/* Box 3 MOBILE: Slide-Over Drawer from Right */}
+        <div
+          className={`
+            md:hidden fixed inset-y-0 right-0 z-40 w-full sm:w-[420px] max-w-[94vw] h-full p-1.5 transition-transform duration-300 ease-in-out
+            ${isSidePanelOpen ? 'translate-x-0' : 'translate-x-full pointer-events-none'}
+          `}
+        >
+          <div className={`w-full h-full rounded-[22px] border shadow-2xl overflow-hidden flex flex-col transition-colors ${
             isDark ? 'border-[#1e2638] bg-[#0f131e]' : 'border-[#d2e0f0] bg-[#edf4fb]'
           }`}>
             <QkdSidePanel

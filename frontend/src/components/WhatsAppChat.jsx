@@ -168,9 +168,11 @@ export default function WhatsAppChat({
       const list = res.users || [];
       setContacts(list);
 
-      // Default select first contact if none selected
+      // Default select first contact on desktop view (keep mobile on contact list initially)
       if (!selectedContact && list.length > 0) {
-        onSelectContact(list[0]);
+        if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+          onSelectContact(list[0]);
+        }
       }
     } catch (err) {
       console.error('Error fetching contacts:', err);
@@ -361,9 +363,14 @@ export default function WhatsAppChat({
       {/* Box 1: Registered Contact Directory OR Settings      */}
       {/* ---------------------------------------------------- */}
       <aside
-        style={{ width: selectedContact ? `${sidebarWidth}px` : '100%' }}
+        style={{
+          width: (typeof window !== 'undefined' && window.innerWidth >= 768 && selectedContact)
+            ? `${sidebarWidth}px`
+            : undefined
+        }}
         className={`
           ${selectedContact ? 'hidden md:flex' : 'flex'}
+          w-full md:w-auto
           rounded-[22px] border shadow-xs flex-col flex-shrink-0 h-full overflow-hidden select-none transition-colors ${
             isDark ? 'bg-[#0f131e] border-[#1e2638]' : 'bg-[#eef2f8] border-[#d8e2f0]'
           }
@@ -647,10 +654,10 @@ export default function WhatsAppChat({
             )}
           </div>
 
-          {/* Action buttons (with Dark Mode toggle beside Bob in top right) */}
-          <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+          {/* Action buttons */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
             {/* Status Pill */}
-            <div className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl border ${
+            <div className={`flex items-center gap-1.5 text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-xl border ${
               keyReady
                 ? isDark
                   ? 'bg-[#064e3b]/50 border-[#059669]/60 text-[#34d399]'
@@ -675,7 +682,7 @@ export default function WhatsAppChat({
                 type="button"
                 onClick={() => setShowClearConfirm(true)}
                 disabled={messages.length === 0 || clearing}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border disabled:opacity-40 disabled:cursor-not-allowed shadow-xs ${
+                className={`p-2 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border disabled:opacity-40 disabled:cursor-not-allowed shadow-xs ${
                   isDark
                     ? 'bg-[#1a2133] hover:bg-[#7f1d1d]/60 hover:text-[#fca5a5] text-[#94a3b8] border-[#252f44] hover:border-[#991b1b]'
                     : 'bg-[#f0f3fa] hover:bg-[#fee2e2] hover:text-[#ef4444] text-[#334155] border-[#dce2f9] hover:border-[#fecaca]'
@@ -691,7 +698,7 @@ export default function WhatsAppChat({
 
             <button
               onClick={onToggleSidePanel}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm ${
+              className={`px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm ${
                 isSidePanelOpen
                   ? 'bg-[#5e67ea] text-white shadow-indigo-100'
                   : isDark
@@ -704,6 +711,7 @@ export default function WhatsAppChat({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>
               <span className="hidden sm:inline">Quantum Channel</span>
+              <span className="sm:hidden text-[11px]">QKD</span>
               <span>{isSidePanelOpen ? '◀' : '▶'}</span>
             </button>
           </div>
@@ -883,7 +891,9 @@ export default function WhatsAppChat({
                   <button
                     type="button"
                     onClick={() => {
-                      if (!isSidePanelOpen) onToggleSidePanel();
+                      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                        if (!isSidePanelOpen) onToggleSidePanel();
+                      }
                       if (onStartSession) onStartSession();
                     }}
                     disabled={isStarting}
@@ -928,7 +938,9 @@ export default function WhatsAppChat({
                     <button
                       type="button"
                       onClick={() => {
-                        if (!isSidePanelOpen) onToggleSidePanel();
+                        if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                          if (!isSidePanelOpen) onToggleSidePanel();
+                        }
                         if (onStartSession) onStartSession();
                       }}
                       disabled={isStarting}
@@ -1092,7 +1104,7 @@ export default function WhatsAppChat({
         {showEmojiPicker && (
           <div
             ref={emojiPickerRef}
-            className={`absolute bottom-20 left-4 sm:left-6 z-50 w-72 sm:w-80 border rounded-3xl shadow-2xl p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95 duration-150 transition-colors ${
+            className={`absolute bottom-16 sm:bottom-20 left-2 right-2 sm:right-auto sm:left-6 z-50 w-auto sm:w-80 max-w-[calc(100vw-1rem)] border rounded-3xl shadow-2xl p-3 flex flex-col gap-2.5 animate-in fade-in zoom-in-95 duration-150 transition-colors ${
               isDark ? 'bg-[#141926] border-[#252f44] text-[#f8fafc]' : 'bg-white border-[#dce2f9] text-[#0f172a]'
             }`}
           >
@@ -1158,7 +1170,7 @@ export default function WhatsAppChat({
         )}
 
         {/* Input Bar */}
-        <div className={`p-3 sm:p-4 border-t flex items-center gap-2 transition-colors ${
+        <div className={`p-2 sm:p-4 border-t flex items-center gap-1.5 sm:gap-2 transition-colors ${
           isDark ? 'bg-[#141926] border-[#1e2638]' : 'bg-white border-[#edf0f8]'
         }`}>
           {/* Smiley Emoji Toggle Button */}
@@ -1166,7 +1178,7 @@ export default function WhatsAppChat({
             type="button"
             disabled={!keyReady}
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className={`p-2 text-xl transition flex-shrink-0 rounded-2xl ${
+            className={`p-1.5 sm:p-2 text-xl transition flex-shrink-0 rounded-2xl ${
               showEmojiPicker
                 ? isDark
                   ? 'bg-[#1e1b4b] text-[#a5b4fc]'
@@ -1198,7 +1210,7 @@ export default function WhatsAppChat({
               e.preventDefault();
               handleSend();
             }}
-            className="flex-1 flex items-center gap-2 min-w-0"
+            className="flex-1 flex items-center gap-1.5 sm:gap-2 min-w-0"
           >
             <div className="relative flex-1 min-w-0">
               <input
@@ -1212,14 +1224,14 @@ export default function WhatsAppChat({
                     ? `Message (AES-256 Armed)...`
                     : '🔒 Quantum channel required...'
                 }
-                className={`w-full border rounded-2xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none font-bold font-sans disabled:opacity-60 disabled:cursor-not-allowed transition-colors ${
+                className={`w-full border rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none font-bold font-sans disabled:opacity-60 disabled:cursor-not-allowed transition-colors ${
                   isDark
                     ? 'bg-[#0f131e] border-[#252f44] text-[#f8fafc] placeholder-[#64748b] focus:border-[#6366f1]'
                     : 'bg-[#f0f3fa] border-[#dce2f9] text-[#0f172a] placeholder-[#475569] focus:border-[#5e67ea]'
                 }`}
               />
               {!keyReady && (
-                <span className={`absolute right-3 top-2.5 sm:top-3 text-[10px] font-mono pointer-events-none font-bold ${
+                <span className={`absolute right-2.5 top-2 sm:top-2.5 text-[10px] font-mono pointer-events-none font-bold ${
                   isDark ? 'text-[#f59e0b]' : 'text-[#b45309]'
                 }`}>
                   LOCKED
@@ -1230,7 +1242,7 @@ export default function WhatsAppChat({
             <button
               type="submit"
               disabled={!keyReady || !inputText.trim() || sending}
-              className={`w-10 h-10 rounded-2xl text-white flex items-center justify-center transition flex-shrink-0 shadow-md disabled:cursor-not-allowed text-sm ${
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl text-white flex items-center justify-center transition flex-shrink-0 shadow-md disabled:cursor-not-allowed text-sm ${
                 isDark
                   ? 'bg-[#5e67ea] hover:bg-[#4f59e0] disabled:bg-[#1e2638] disabled:text-[#475569] shadow-indigo-900/30'
                   : 'bg-[#5e67ea] hover:bg-[#4f59e0] disabled:bg-[#e2e7f4] disabled:text-[#94a3b8] shadow-indigo-200'
